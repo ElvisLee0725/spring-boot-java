@@ -1,11 +1,14 @@
 package com.example.demo;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 
 // Implement Student API
 @RestController
+@Validated
 public class StudentController {
 
     // Create student
@@ -17,7 +20,7 @@ public class StudentController {
 
     // Read student with id
     @GetMapping("/students/{studentId}")
-    public String read(@PathVariable Integer studentId) {
+    public String read(@PathVariable @Min(100) Integer studentId) {
         return "Execute read operation";
     }
 
