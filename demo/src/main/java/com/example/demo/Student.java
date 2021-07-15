@@ -1,10 +1,14 @@
 package com.example.demo;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public class Student {
-    String name;
+    @NotNull
     Integer id;
+    
+    String name;
+
 
     public Integer getId() {
         return id;
