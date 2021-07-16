@@ -73,4 +73,14 @@ public class MyController {
         s.setName("Elvis Lee");
         return s;
     }
+
+    @RequestMapping("/testError")
+    public String runtimeError() {
+        throw new RuntimeException("Error in /testError");
+    }
+
+    @RequestMapping("/testError2")
+    public String illegalArgumentError() {
+        throw new IllegalArgumentException("This is an illegal argument");
+    }
 }
