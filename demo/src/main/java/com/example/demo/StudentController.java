@@ -1,13 +1,17 @@
 package com.example.demo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 // Implement Student API
@@ -20,13 +24,56 @@ public class StudentController {
     // Create student
     @PostMapping("/students")
     public String insert(@RequestBody Student student) {
-        String sql = "INSERT INTO student(id, name) VALUE (:studentId, :studentName)";
+        String sql = "INSERT INTO student(name) VALUE (:studentName)";
         Map<String, Object> map = new HashMap<>();
-        map.put("studentId", student.getId());
         map.put("studentName", student.getName());
 
-        namedParameterJdbcTemplate.update(sql, map);
+        // Get the auto-generated key from db with KeyHolder
+        KeyHolder keyholder = new GeneratedKeyHolder();
+
+        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyholder);
+
+        int id = keyholder.getKey().intValue();
+        System.out.println("MySQL auto generated id: " + id);
         return "Execute INSERT sql";
+    }
+
+    @PostMapping("/students/batch")
+    public String batchInsert(@RequestBody List<Student> studentList) {
+        String sql = "INSERT INTO student(name) VALUE (:studentName)";
+
+        MapSqlParameterSource [] parameterSources = new MapSqlParameterSource[studentList.size()];
+        for(int i = 0; i < studentList.size(); i++) {
+            Student student = studentList.get(i);
+
+            parameterSources[i] = new MapSqlParameterSource();
+            parameterSources[i].addValue("studentName", student.getName());
+        }
+
+        namedParameterJdbcTemplate.batchUpdate(sql, parameterSources);
+        return "Execute batch insert SQL";
+    }
+
+    @GetMapping("/students")
+    public List<Student> select() {
+        String sql = "SELECT id, name FROM student";
+        Map<String, Object> map = new HashMap<>();
+
+        List<Student> list = namedParameterJdbcTemplate.query(sql, map, new StudentRowMapper());
+        return list;
+    }
+
+    @GetMapping("/students/{studentId}")
+    public Student selectById(@PathVariable Integer studentId) {
+        String sql = "SELECT id, name FROM student WHERE id = :studentId";
+        Map<String, Object> map = new HashMap<>();
+        map.put("studentId", studentId);
+
+        // Even if we just want 1 item, it will return a List
+        List<Student> list = namedParameterJdbcTemplate.query(sql, map, new StudentRowMapper());
+
+        // Check if there is any result in list
+        return list.size() > 0 ? list.get(0) : null;
     }
 
     @DeleteMapping("/students/{studentId}")
@@ -36,12 +83,6 @@ public class StudentController {
         map.put("studentId", studentId);
         namedParameterJdbcTemplate.update(sql, map);
         return "Execute DELETE sql";
-    }
-
-    // Read student with id
-    @GetMapping("/students/{studentId}")
-    public String read(@PathVariable @Min(100) Integer studentId) {
-        return "Execute read operation";
     }
 
     // Update student with id
