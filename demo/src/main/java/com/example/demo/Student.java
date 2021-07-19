@@ -1,12 +1,17 @@
 package com.example.demo;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "student")
 public class Student {
-    @NotNull
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Auto Increment
+    @Column(name = "id")
     Integer id;
-    @NotBlank
+
+    @Column(name = "name")
     String name;
 
     public Integer getId() {

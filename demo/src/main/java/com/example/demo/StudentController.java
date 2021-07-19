@@ -18,77 +18,85 @@ import java.util.Map;
 @RestController
 @Validated
 public class StudentController {
-
     @Autowired
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    // Create student
+    private StudentRepository studentRepository;
+
     @PostMapping("/students")
     public String insert(@RequestBody Student student) {
-        String sql = "INSERT INTO student(name) VALUE (:studentName)";
-        Map<String, Object> map = new HashMap<>();
-        map.put("studentName", student.getName());
-
-        // Get the auto-generated key from db with KeyHolder
-        KeyHolder keyholder = new GeneratedKeyHolder();
-
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyholder);
-
-        int id = keyholder.getKey().intValue();
-        System.out.println("MySQL auto generated id: " + id);
-        return "Execute INSERT sql";
+        studentRepository.save(student);
+        return "Execute CREATE operation";
     }
 
-    @PostMapping("/students/batch")
-    public String batchInsert(@RequestBody List<Student> studentList) {
-        String sql = "INSERT INTO student(name) VALUE (:studentName)";
-
-        MapSqlParameterSource [] parameterSources = new MapSqlParameterSource[studentList.size()];
-        for(int i = 0; i < studentList.size(); i++) {
-            Student student = studentList.get(i);
-
-            parameterSources[i] = new MapSqlParameterSource();
-            parameterSources[i].addValue("studentName", student.getName());
-        }
-
-        namedParameterJdbcTemplate.batchUpdate(sql, parameterSources);
-        return "Execute batch insert SQL";
-    }
-
-    @GetMapping("/students")
-    public List<Student> select() {
-        String sql = "SELECT id, name FROM student";
-        Map<String, Object> map = new HashMap<>();
-
-        List<Student> list = namedParameterJdbcTemplate.query(sql, map, new StudentRowMapper());
-        return list;
-    }
-
-    @GetMapping("/students/{studentId}")
-    public Student selectById(@PathVariable Integer studentId) {
-        String sql = "SELECT id, name FROM student WHERE id = :studentId";
-        Map<String, Object> map = new HashMap<>();
-        map.put("studentId", studentId);
-
-        // Even if we just want 1 item, it will return a List
-        List<Student> list = namedParameterJdbcTemplate.query(sql, map, new StudentRowMapper());
-
-        // Check if there is any result in list
-        return list.size() > 0 ? list.get(0) : null;
-    }
-
-    @DeleteMapping("/students/{studentId}")
-    public String delete(@PathVariable Integer studentId) {
-        String sql = "DELETE FROM student WHERE id = :studentId";
-        Map<String, Object> map = new HashMap<>();
-        map.put("studentId", studentId);
-        namedParameterJdbcTemplate.update(sql, map);
-        return "Execute DELETE sql";
-    }
-
-    // Update student with id
-    @PutMapping("/students/{studentId}")
-    public String update(@PathVariable Integer studentId,
-                         @RequestBody Student student) {
-        return "Execute update operation";
-    }
+//    @Autowired
+//    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+//    // Create student
+//    @PostMapping("/students")
+//    public String insert(@RequestBody Student student) {
+//        String sql = "INSERT INTO student(name) VALUE (:studentName)";
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("studentName", student.getName());
+//
+//        // Get the auto-generated key from db with KeyHolder
+//        KeyHolder keyholder = new GeneratedKeyHolder();
+//
+//        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyholder);
+//
+//        int id = keyholder.getKey().intValue();
+//        System.out.println("MySQL auto generated id: " + id);
+//        return "Execute INSERT sql";
+//    }
+//
+//    @PostMapping("/students/batch")
+//    public String batchInsert(@RequestBody List<Student> studentList) {
+//        String sql = "INSERT INTO student(name) VALUE (:studentName)";
+//
+//        MapSqlParameterSource [] parameterSources = new MapSqlParameterSource[studentList.size()];
+//        for(int i = 0; i < studentList.size(); i++) {
+//            Student student = studentList.get(i);
+//
+//            parameterSources[i] = new MapSqlParameterSource();
+//            parameterSources[i].addValue("studentName", student.getName());
+//        }
+//
+//        namedParameterJdbcTemplate.batchUpdate(sql, parameterSources);
+//        return "Execute batch insert SQL";
+//    }
+//
+//    @GetMapping("/students")
+//    public List<Student> select() {
+//        String sql = "SELECT id, name FROM student";
+//        Map<String, Object> map = new HashMap<>();
+//
+//        List<Student> list = namedParameterJdbcTemplate.query(sql, map, new StudentRowMapper());
+//        return list;
+//    }
+//
+//    @GetMapping("/students/{studentId}")
+//    public Student selectById(@PathVariable Integer studentId) {
+//        String sql = "SELECT id, name FROM student WHERE id = :studentId";
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("studentId", studentId);
+//
+//        // Even if we just want 1 item, it will return a List
+//        List<Student> list = namedParameterJdbcTemplate.query(sql, map, new StudentRowMapper());
+//
+//        // Check if there is any result in list
+//        return list.size() > 0 ? list.get(0) : null;
+//    }
+//
+//    @DeleteMapping("/students/{studentId}")
+//    public String delete(@PathVariable Integer studentId) {
+//        String sql = "DELETE FROM student WHERE id = :studentId";
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("studentId", studentId);
+//        namedParameterJdbcTemplate.update(sql, map);
+//        return "Execute DELETE sql";
+//    }
+//
+//    // Update student with id
+//    @PutMapping("/students/{studentId}")
+//    public String update(@PathVariable Integer studentId,
+//                         @RequestBody Student student) {
+//        return "Execute update operation";
+//    }
 }
