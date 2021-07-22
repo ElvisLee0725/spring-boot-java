@@ -27,6 +27,23 @@ public class StudentController {
         return "Execute CREATE operation";
     }
 
+    @GetMapping("/students/{id}/{name}")
+    public Student getStudentWithIdName(@PathVariable Integer id,
+                                        @PathVariable String name) {
+        return studentRepository.getIdName(id, name);
+    }
+
+    @GetMapping("/students")
+    public List<Student> getStudentByName(@RequestParam String name) {
+        return studentRepository.findByName(name);
+    }
+
+    @GetMapping("/students2/{id}/{name}")
+    public Student getStudentWithIdName2(@PathVariable Integer id,
+                                        @PathVariable String name) {
+        return studentRepository.findByIdAndName(id, name);
+    }
+
 //    @Autowired
 //    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 //    // Create student
