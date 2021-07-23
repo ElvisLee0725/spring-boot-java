@@ -92,15 +92,7 @@ public class StudentController {
 //
 //    @GetMapping("/students/{studentId}")
 //    public Student selectById(@PathVariable Integer studentId) {
-//        String sql = "SELECT id, name FROM student WHERE id = :studentId";
-//        Map<String, Object> map = new HashMap<>();
-//        map.put("studentId", studentId);
 //
-//        // Even if we just want 1 item, it will return a List
-//        List<Student> list = namedParameterJdbcTemplate.query(sql, map, new StudentRowMapper());
-//
-//        // Check if there is any result in list
-//        return list.size() > 0 ? list.get(0) : null;
 //    }
 //
 //    @DeleteMapping("/students/{studentId}")
