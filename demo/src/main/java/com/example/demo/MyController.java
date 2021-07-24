@@ -5,10 +5,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 // @RequestMapping("/detail")
 @RestController
@@ -22,6 +25,7 @@ public class MyController {
 //        printer.print("Hello Big World");
 //        return "Hello World";
 //    }
+
 
     @RequestMapping("/test")
     public ResponseEntity<String> test() {
